@@ -1,0 +1,22 @@
+.container,
+.main {
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  min-height: 100vh;
+  flex: 1;
+}
+
+.main {
+  margin: 5%;
+}
+
+.search_input {
+  border: none;
+  background: #ebebeb;
+  color: #116193;
+  border-radius: 30px;
+  padding: 1% 2%;
+}
