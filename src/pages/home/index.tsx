@@ -1,27 +1,30 @@
 import React, { useState, useEffect } from 'react';
 
+import { AppState } from 'store/reducers';
+import { useSelector, useDispatch } from 'react-redux';
+import { SearchState, searchByName } from 'store/reducers/search';
+
 import styles from './style.module.css';
 import Header from 'components/header';
 import MovieResult, { MovieSearchResult } from 'components/movie-result';
-import { search, searchByGenre, getGenres } from 'api/search';
+import { searchByGenre, getGenres } from 'api/search';
+
+import { FaSpinner } from 'react-icons/fa';
 
 export default function Home() {
   const [movies, setMovies] = useState<any[]>([]);
   const [genres, setGenres] = useState<any[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
 
+  const searchState: SearchState = useSelector(
+    (state: AppState) => state.search,
+  );
+
+  const dispatch = useDispatch();
+
   async function loadData(event: any, value: string) {
     event.preventDefault();
-
-    await search(value)
-      .then(response => {
-        if (response.data.hasOwnProperty('results')) {
-          setMovies(response.data.results);
-        }
-      })
-      .catch(error => {
-        setMovies([]);
-      });
+    dispatch(searchByName(value));
   }
 
   async function loadByGenre(event: any, genreId: number) {
@@ -104,8 +107,10 @@ export default function Home() {
           </select>
         </form>
         <div className={styles.results}>
-          {movies && movies.length ? (
-            movies.map((item, key) => {
+          {searchState.movies &&
+          searchState.movies.length &&
+          !searchState.loading ? (
+            searchState.movies.map((item, key) => {
               const movie: MovieSearchResult = {
                 overview: item.overview,
                 poster_path: item.poster_path,
@@ -115,8 +120,12 @@ export default function Home() {
               };
               return <MovieResult key={key} data={movie} />;
             })
+          ) : searchState.loading ? (
+            <div className={styles.center}>
+              <FaSpinner className={styles.rotate} />
+            </div>
           ) : (
-            <div className={styles.empty}>
+            <div className={styles.center}>
               <p>Nenhum filme encontrado.</p>
               <p>Faça uma busca para ver resultados.</p>
             </div>
