@@ -1,14 +1,26 @@
 import axios, { AxiosInstance } from 'axios';
 require('dotenv').config();
 
-const _baseURL = 'https://api.themoviedb.org/3/';
+export default (): AxiosInstance => {
+  // TMDB API url
+  const _baseURL = 'https://api.themoviedb.org/3/';
 
-const token = '94a700b37cd881aa3d9da9fb8c46acdf';
+  // TMDB token
+  const token = process.env.REACT_APP_API_TOKEN;
 
-const httpClient: AxiosInstance = axios.create({
-  baseURL: _baseURL,
-});
+  // Axios client config
+  const httpClient: AxiosInstance = axios.create({
+    baseURL: _baseURL,
+  });
 
-// httpClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  // Set Bearer token as default header
+  if (token) {
+    httpClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  } else {
+    throw new Error(
+      'You must provide a Bearer token on your .env config file.',
+    );
+  }
 
-export default httpClient;
+  return httpClient;
+};
