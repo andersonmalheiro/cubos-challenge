@@ -8,6 +8,10 @@
   margin-bottom: 3%;
 }
 
+.movie_img {
+  max-height: 300px;
+}
+
 .movie_img img {
   max-width: 200px;
   max-height: 300px;

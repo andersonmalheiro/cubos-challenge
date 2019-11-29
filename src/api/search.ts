@@ -1,15 +1,42 @@
 import httpClient from 'http-utils';
 
-export default function search(value: string) {
+export function search(value: string) {
   const params = {
     language: 'en-US',
     query: value,
     include_adult: false,
-    api_key: '94a700b37cd881aa3d9da9fb8c46acdf',
   };
 
-  return httpClient
+  return httpClient()
     .get('search/movie', { params })
+    .then(response => response)
+    .catch(error => {
+      throw error;
+    });
+}
+
+export function searchByGenre(genreId: number) {
+  const params = {
+    language: 'en-US',
+    with_genres: genreId,
+    include_adult: true,
+  };
+
+  return httpClient()
+    .get('discover/movie', { params })
+    .then(response => response)
+    .catch(error => {
+      throw error;
+    });
+}
+
+export function getGenres() {
+  const params = {
+    language: 'en-US',
+  };
+
+  return httpClient()
+    .get('genre/movie/list', { params })
     .then(response => response)
     .catch(error => {
       throw error;

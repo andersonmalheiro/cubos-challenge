@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import styles from './style.module.css';
 import Header from 'components/header';
 import MovieResult, { MovieSearchResult } from 'components/movie-result';
-import search from 'api/search';
+import { search, searchByGenre, getGenres } from 'api/search';
 
 export default function Home() {
   const [movies, setMovies] = useState<any[]>([]);
+  const [genres, setGenres] = useState<any[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
 
   async function loadData(event: any, value: string) {
@@ -23,13 +24,52 @@ export default function Home() {
       });
   }
 
+  async function loadByGenre(event: any, genreId: number) {
+    // event.preventDefault();
+
+    await searchByGenre(genreId)
+      .then(response => {
+        if (response.data.hasOwnProperty('results')) {
+          setMovies(response.data.results);
+        }
+      })
+      .catch(error => {
+        setMovies([]);
+      });
+  }
+
+  async function getGenreList() {
+    await getGenres()
+      .then(response => {
+        if (response.data.hasOwnProperty('genres')) {
+          setGenres(response.data.genres);
+        }
+      })
+      .catch(error => {
+        setGenres([]);
+      });
+  }
+
   const handleInputChange = (event: { target: any }) => {
     const target = event.target;
     const value = target.value;
     setSearchValue(value);
   };
 
+  const handleSelectChange = (event: { target: any }) => {
+    const target = event.target;
+    const value = target.value;
+    if (value) {
+      loadByGenre({}, value);
+    }
+  };
+
+  useEffect(() => {
+    getGenreList();
+  }, []);
+
   document.title = 'Cubos Movie Search';
+
   return (
     <div className={styles.container}>
       <Header />
@@ -42,9 +82,26 @@ export default function Home() {
             type="text"
             required
             className={styles.search_input}
-            placeholder="Busque por nome, ano ou gênero..."
+            placeholder="Busque por nome..."
             onChange={e => handleInputChange(e)}
           />
+
+          <select
+            name="genres"
+            id="genres"
+            className={styles.select_input}
+            onChange={e => handleSelectChange(e)}
+          >
+            <option value="">Selecione um gênero</option>
+            {genres.length &&
+              genres.map((genre: { id: number; name: string }, key) => {
+                return (
+                  <option key={key} value={genre.id}>
+                    {genre.name}
+                  </option>
+                );
+              })}
+          </select>
         </form>
         <div className={styles.results}>
           {movies && movies.length ? (
