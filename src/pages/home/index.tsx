@@ -1,44 +1,43 @@
 import React, { useState, useEffect } from 'react';
-
-import { AppState } from 'store/reducers';
 import { useSelector, useDispatch } from 'react-redux';
-import { SearchState, searchByName } from 'store/reducers/search';
-
 import styles from './style.module.css';
+import isEmpty from 'lodash/isEmpty';
 import Header from 'components/header';
 import MovieResult, { MovieSearchResult } from 'components/movie-result';
-import { searchByGenre, getGenres } from 'api/search';
-
-import { FaSpinner } from 'react-icons/fa';
+import { AppState } from 'store/reducers';
+import {
+  SearchState,
+  searchByName,
+  getMoviesByGenre,
+} from 'store/reducers/movies';
+import {
+  FaSpinner,
+  FaChevronCircleLeft,
+  FaChevronCircleRight,
+} from 'react-icons/fa';
+import ReactPaginate from 'react-paginate';
+import { getGenres } from 'api/search';
 
 export default function Home() {
-  const [movies, setMovies] = useState<any[]>([]);
   const [genres, setGenres] = useState<any[]>([]);
-  const [searchValue, setSearchValue] = useState<string>('');
+  const [searchValue, setSearchValue] = useState<any>('');
+  const [isGenre, setIsGenre] = useState<boolean>(false);
 
-  const searchState: SearchState = useSelector(
-    (state: AppState) => state.search,
+  const movieState: SearchState = useSelector(
+    (state: AppState) => state.movies,
   );
 
   const dispatch = useDispatch();
 
-  async function loadData(event: any, value: string) {
-    event.preventDefault();
-    dispatch(searchByName(value));
+  function loadData(event: any, value: string, page?: number) {
+    if (!isEmpty(event)) {
+      event.preventDefault();
+    }
+    dispatch(searchByName(value, page));
   }
 
-  async function loadByGenre(event: any, genreId: number) {
-    // event.preventDefault();
-
-    await searchByGenre(genreId)
-      .then(response => {
-        if (response.data.hasOwnProperty('results')) {
-          setMovies(response.data.results);
-        }
-      })
-      .catch(error => {
-        setMovies([]);
-      });
+  function loadByGenre(genreId: number, page?: number) {
+    dispatch(getMoviesByGenre(genreId, page));
   }
 
   async function getGenreList() {
@@ -57,13 +56,24 @@ export default function Home() {
     const target = event.target;
     const value = target.value;
     setSearchValue(value);
+    setIsGenre(false);
   };
 
   const handleSelectChange = (event: { target: any }) => {
     const target = event.target;
     const value = target.value;
+    setSearchValue(value);
+    setIsGenre(true);
     if (value) {
-      loadByGenre({}, value);
+      loadByGenre(value);
+    }
+  };
+
+  const paginateList = (event: { selected: number }) => {
+    if (isGenre) {
+      loadByGenre(searchValue, event.selected + 1);
+    } else {
+      loadData({}, searchValue, event.selected + 1);
     }
   };
 
@@ -107,10 +117,8 @@ export default function Home() {
           </select>
         </form>
         <div className={styles.results}>
-          {searchState.movies &&
-          searchState.movies.length &&
-          !searchState.loading ? (
-            searchState.movies.map((item, key) => {
+          {movieState.data && movieState.data.length && !movieState.loading ? (
+            movieState.data.map((item, key) => {
               const movie: MovieSearchResult = {
                 overview: item.overview,
                 poster_path: item.poster_path,
@@ -120,7 +128,7 @@ export default function Home() {
               };
               return <MovieResult key={key} data={movie} />;
             })
-          ) : searchState.loading ? (
+          ) : movieState.loading ? (
             <div className={styles.center}>
               <FaSpinner className={styles.rotate} />
             </div>
@@ -131,6 +139,32 @@ export default function Home() {
             </div>
           )}
         </div>
+        {movieState.data.length ? (
+          <div className={styles.pagination_container}>
+            <ReactPaginate
+              previousLabel={<FaChevronCircleLeft />}
+              nextClassName={styles.page}
+              nextLinkClassName={styles.page_link}
+              previousClassName={styles.page}
+              previousLinkClassName={styles.page_link}
+              nextLabel={<FaChevronCircleRight />}
+              breakLabel={'...'}
+              breakClassName={'break-me'}
+              pageCount={movieState.total_pages}
+              marginPagesDisplayed={2}
+              pageRangeDisplayed={5}
+              onPageChange={e => {
+                paginateList(e);
+              }}
+              containerClassName={styles.pagination}
+              pageClassName={styles.page}
+              pageLinkClassName={styles.page_link}
+              activeClassName={styles.active}
+            />
+          </div>
+        ) : (
+          ''
+        )}
       </div>
     </div>
   );
