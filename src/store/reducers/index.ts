@@ -1,12 +1,12 @@
 import { combineReducers } from 'redux';
-import search from './search';
+import movies from './movies';
 
 // Combinação de todos os reducers da aplicação
 const mainReducer = combineReducers({
-  search,
+  movies,
 });
 
-// Reseta a store quando for feito logout
+// Root reducer
 const rootReducer = (state: any, action: any) => {
   return mainReducer(state, action);
 };
