@@ -17,6 +17,7 @@ import {
 } from 'react-icons/fa';
 import ReactPaginate from 'react-paginate';
 import { getGenres } from 'api/search';
+import { Link } from 'react-router-dom';
 
 export default function Home() {
   const [genres, setGenres] = useState<any[]>([]);
@@ -125,6 +126,7 @@ export default function Home() {
                 release_date: item.release_date,
                 title: item.title,
                 vote_average: item.vote_average,
+                id: item.id,
               };
               return <MovieResult key={key} data={movie} />;
             })
