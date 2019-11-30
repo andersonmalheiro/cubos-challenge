@@ -1,9 +1,11 @@
 import { combineReducers } from 'redux';
 import movies from './movies';
+import detail from './detail';
 
 // Combinação de todos os reducers da aplicação
 const mainReducer = combineReducers({
   movies,
+  detail,
 });
 
 // Root reducer
