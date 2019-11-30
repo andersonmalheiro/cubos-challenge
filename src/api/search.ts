@@ -1,10 +1,10 @@
 import httpClient from 'http-utils';
 
-export function search(value: string) {
+export function search(name: string, page?: number) {
   const params = {
-    language: 'en-US',
-    query: value,
-    include_adult: false,
+    query: name,
+    include_adult: true,
+    page,
   };
 
   return httpClient()
@@ -15,11 +15,11 @@ export function search(value: string) {
     });
 }
 
-export function searchByGenre(genreId: number) {
+export function searchByGenre(genreId: number, page?: number) {
   const params = {
-    language: 'en-US',
     with_genres: genreId,
     include_adult: true,
+    page,
   };
 
   return httpClient()
