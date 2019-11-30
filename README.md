@@ -10,6 +10,15 @@ O layout foi alterado em alguns momentos para suprir os requisitos, portanto res
 
 Quanto ao consumo da API, requisições, etc, foi utilizado Redux e Axios para gerenciar ações e requests.
 
+## Configuração
+
+Para que as consultas à API funcionem corretamente é necessário criar um arquivo `.env` na raiz do projeto com o seguinte conteúdo:
+```
+REACT_APP_API_TOKEN=<token>
+```
+O token pode ser obtido nas configurações da sua conta da API, na sessão **API Read Access Token (v4 auth)**
+
+
 ## Scripts disponíveis
 
 Na raiz do projeto você pode executar:
