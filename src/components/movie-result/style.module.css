@@ -10,11 +10,12 @@
 
 .movie_img {
   max-height: 300px;
+  max-width: 200px;
 }
 
 .movie_img img {
-  max-width: 200px;
-  max-height: 300px;
+  width: 200px;
+  height: 300px;
 }
 
 .movie_details {
@@ -72,7 +73,7 @@
 }
 
 .sinopse {
-  margin: 3% 0;
+  margin: 2% 0;
   text-align: left;
 }
 
@@ -117,5 +118,39 @@
 
   .date {
     margin-left: 4%;
+  }
+}
+
+@media (max-width: 500px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .details_header {
+    padding-left: 2%;
+    align-items: center;
+  }
+
+  .date {
+    margin-left: 0;
+  }
+
+  .percentual {
+    top: 6%;
+    left: auto;
+    right: 2%;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .details_header h1 {
+    font-size: 18px;
+  }
+
+  .sinopse {
+    font-size: small;
+  }
+
+  .movie_img {
+    display: none;
   }
 }
